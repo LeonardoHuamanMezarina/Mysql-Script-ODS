@@ -1,40 +1,70 @@
--- Insertar usuarios en la tabla user
-INSERT INTO users(name, surnames, identification_document, document_number, email, cellular)  
-VALUES 
-('Carlos', 'Ramirez', 'DNI', '12345678', 'carlos.ramirez@email.com', '987654321'),
-('Lucia', 'Gonzales', 'PAS', 'A123456', 'lucia.gonzales@email.com', '912345678'),
-('Ana', 'Martinez', 'DNI', '87654321', 'ana.martinez@email.com', NULL);
+-------------------------------------------------------------------
+-- Insertar usuarios
+INSERT INTO usuario (nombre, correo) VALUES 
+('Juan Pérez', 'juan.perez@gmail.com'),
+('Ana López', 'ana.lopez@hotmail.com');
 
--- Listar todos los usuariosA
-SELECT * FROM users;
+-- Insertar asesores
+INSERT INTO asesor (nombre) VALUES 
+('Carlos Sánchez'),
+('María Ramírez');
 
--- Listar usuarios con su tipo y número de documento
-SELECT names, surnames, identification_document, document_number FROM users;
+-- Insertar preguntas
+INSERT INTO pregunta (id_usuario, pregunta, id_asesor, respuesta, estado_consulta) VALUES 
+(1, '¿Cuál es el proceso de registro?', 1, 'Puede registrarse en la página principal.', 'A'),
+(2, '¿Cuáles son los horarios de atención?', 2, 'De lunes a viernes de 9 am a 6 pm.', 'A');
 
--- Buscar un usuario por correo electrónico
-SELECT * FROM users WHERE name = 'carlos';
+
+-------------------------------------------------------------------
 
 
--- Actualizar el número de celular de un usuario
-UPDATE users 
-SET cellular = '999888777' 
-WHERE ID = 1;
+-------------------------------------------------------------------
+-- Listar todas las preguntas activas
+SELECT p.id_pregunta, u.nombre AS usuario, p.pregunta, p.fecha_pregunta, 
+       a.nombre AS asesor, p.respuesta, p.estado_consulta
+FROM pregunta p
+JOIN usuario u ON p.id_usuario = u.id_usuario
+LEFT JOIN asesor a ON p.id_asesor = a.id_asesor
+WHERE p.estado_consulta = 'A';
+
+-- Listar todas las preguntas con estado (activas e inactivas)
+SELECT * FROM pregunta;
+
+-------------------------------------------------------------------
+
+
+-------------------------------------------------------------------
+-- Actualizar el estado de una consulta (cambio de asesor y respuesta)
+UPDATE pregunta
+SET id_asesor = 2, respuesta = 'Estamos revisando su caso.'
+WHERE id_pregunta = 1;
 
 -- Actualizar el correo de un usuario
-UPDATE users 
-SET email = 'lucia.new@email.com' 
-WHERE id = 2;
+UPDATE usuario
+SET correo = 'juan.nuevo@gmail.com'
+WHERE id_usuario = 1;
 
--- Añadir columna 'activo' para eliminación lógica (opcional)
-ALTER TABLE users ADD COLUMN activo BOOLEAN DEFAULT TRUE;
+-------------------------------------------------------------------
 
--- Marcar a un usuario como inactivo
-UPDATE users 
-SET activo = FALSE 
-WHERE id = 3;
 
--- Eliminar un usuario de forma permanente
-DELETE FROM users 
-WHERE id = 3;
 
-select * from users;
+
+-------------------------------------------------------------------
+
+-- Eliminar físicamente un usuario (y sus preguntas asociadas por ON DELETE CASCADE)
+DELETE FROM usuario WHERE id_usuario = 2;
+
+-- Eliminar físicamente un asesor (las preguntas quedarán sin asesor por ON DELETE SET NULL)
+DELETE FROM asesor WHERE id_asesor = 1;
+
+-------------------------------------------------------------------
+
+
+-------------------------------------------------------------------
+
+-- Marcar una pregunta como inactiva (eliminación lógica)
+UPDATE pregunta
+SET estado_consulta = 'I'
+WHERE id_pregunta = 1;
+
+-------------------------------------------------------------------
