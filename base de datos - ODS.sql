@@ -1,15 +1,29 @@
--- Crear la base de datos
-CREATE DATABASE ODS;
-USE ODS;
--- Crear la tabla 'users' basada en tu estructura
-CREATE TABLE users (
-    ID INT AUTO_INCREMENT PRIMARY KEY,           -- Clave primaria auto-incremental
-    name VARCHAR(60) NOT NULL,                   -- Nombres del usuario
-    surnames VARCHAR(100) NOT NULL,              -- Apellidos del usuario
-    identification_document CHAR(3) NOT NULL,    -- Tipo de documento (DNI, PAS, etc.)
-    document_number VARCHAR(20) NOT NULL UNIQUE, -- Número de documento único
-    email VARCHAR(120) NOT NULL UNIQUE,          -- Email del usuario único
-    cellular CHAR(9),                            -- Celular (opcional)
-    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Fecha de registro automática
-    activo BOOLEAN DEFAULT TRUE                 -- Estado lógico (activo/inactivo)
+-- 1. Crear la base de datos
+CREATE DATABASE gestion_preguntas;
+USE gestion_preguntas;
+
+-- 2. Crear la tabla de usuarios (clientes que realizan las consultas)
+CREATE TABLE usuario (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(60) NOT NULL,
+    correo VARCHAR(120) NOT NULL UNIQUE
+);
+
+-- 3. Crear la tabla de asesores
+CREATE TABLE asesor (
+    id_asesor INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(60) NOT NULL
+);
+
+-- 4. Crear la tabla de preguntas (consultas)
+CREATE TABLE pregunta (
+    id_pregunta INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    pregunta VARCHAR(400) NOT NULL,
+    fecha_pregunta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_asesor INT,
+    respuesta VARCHAR(500),
+    estado_consulta CHAR(1) DEFAULT 'A',
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (id_asesor) REFERENCES asesor(id_asesor) ON DELETE SET NULL
 );
